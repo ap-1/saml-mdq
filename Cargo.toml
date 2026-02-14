@@ -1,0 +1,19 @@
+[package]
+name = "saml-mdq"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hex = "0.4.3"
+moka = { version = "0.12.13", features = ["future"] }
+reqwest = "0.13.2"
+samael = { git = "https://github.com/ap-1/samael.git", branch = "fix/contact-person-deserialization", features = ["xmlsec"] }
+serde = { version = "1.0.228", features = ["derive"] }
+sha1 = "0.10.6"
+thiserror = "2.0.18"
+tokio = { version = "1.49.0", features = ["full"] }
+url = "2.5.8"
+
+[dev-dependencies]
+mockito = "1.7.2"
+tokio-test = "0.4.5"
