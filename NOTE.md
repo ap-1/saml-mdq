@@ -32,7 +32,7 @@ This fork is currently pinned in `Cargo.toml`:
 samael = { git = "https://github.com/ap-1/samael.git", branch = "fix/contact-person-deserialization", features = ["xmlsec"] }
 ```
 
-This hasn't been upstreamed as a PR to [njaremko/samael](https://github.com/njaremko/samael) yet.
+This is being upstreamed via [njaremko/samael#80](https://github.com/njaremko/samael/pull/80).
 
 ## Why quick-xml strips namespace prefixes
 
@@ -56,7 +56,7 @@ A proper fix requires namespace-aware serde, which is architecturally hard since
 
 ## Next steps
 
-- Open a PR on [njaremko/samael](https://github.com/njaremko/samael) upstreaming the fork's fix, referencing [samael#11](https://github.com/njaremko/samael/issues/11)
+- ~~Open a PR on [njaremko/samael](https://github.com/njaremko/samael) upstreaming the fork's fix, referencing [samael#11](https://github.com/njaremko/samael/issues/11)~~ Done: [njaremko/samael#80](https://github.com/njaremko/samael/pull/80)
 - Comment on [quick-xml #218](https://github.com/tafia/quick-xml/issues/218) or [#757](https://github.com/tafia/quick-xml/issues/757) linking this use case as another example of real-world breakage
 - Attempt an interim PR on quick-xml to preserve all prefixes (not just `xmlns:` and `xml:`), following the pattern of PRs [#539](https://github.com/tafia/quick-xml/pull/539)/[#873](https://github.com/tafia/quick-xml/pull/873)
 - Remove the fork pin in `Cargo.toml` once the fix is merged upstream
