@@ -2,6 +2,7 @@ use crate::cache::MdqCache;
 use crate::error::{MdqError, Result};
 use crate::hash::hash_entity_id;
 use reqwest::Client;
+use samael::crypto::{CertificateDer, Crypto, CryptoProvider};
 use samael::metadata::EntityDescriptor;
 use std::time::Duration;
 
@@ -9,11 +10,13 @@ pub struct MdqClient {
     base_url: String,
     http: Client,
     cache: Option<MdqCache>,
+    signing_cert: Option<Vec<u8>>,
 }
 
 pub struct MdqClientBuilder {
     base_url: String,
     cache: Option<MdqCache>,
+    signing_cert: Option<Vec<u8>>,
     timeout: Duration,
 }
 
@@ -22,12 +25,18 @@ impl MdqClientBuilder {
         Self {
             base_url: base_url.into(),
             cache: None,
+            signing_cert: None,
             timeout: Duration::from_secs(10),
         }
     }
 
     pub fn cache(mut self, cache: MdqCache) -> Self {
         self.cache = Some(cache);
+        self
+    }
+
+    pub fn signing_cert(mut self, cert_der: Vec<u8>) -> Self {
+        self.signing_cert = Some(cert_der);
         self
     }
 
@@ -46,6 +55,7 @@ impl MdqClientBuilder {
             base_url: self.base_url.trim_end_matches('/').to_string(),
             http,
             cache: self.cache,
+            signing_cert: self.signing_cert,
         })
     }
 }
@@ -83,6 +93,12 @@ impl MdqClient {
         }
 
         let xml = response.text().await?;
+
+        if let Some(cert_der) = &self.signing_cert {
+            let cert = CertificateDer::from(cert_der.clone());
+            Crypto::verify_signed_xml(xml.as_bytes(), &cert, Some("ID"))
+                .map_err(|e| MdqError::SignatureError(e.to_string()))?;
+        }
 
         let descriptor: EntityDescriptor = samael::metadata::de::from_str(&xml)
             .map_err(|e| MdqError::InvalidXml(e.to_string()))?;
