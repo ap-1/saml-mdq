@@ -1,6 +1,6 @@
 use crate::cache::MdqCache;
 use crate::error::{MdqError, Result};
-use crate::hash::hash_entity_id;
+use crate::hash::encode_entity_id;
 use reqwest::Client;
 use samael::crypto::{CertificateDer, Crypto, CryptoProvider};
 use samael::metadata::EntityDescriptor;
@@ -76,8 +76,8 @@ impl MdqClient {
             return Ok(cached);
         }
 
-        let hash = hash_entity_id(entity_id);
-        let url = format!("{}/entities/%7Bsha1%7D{}", self.base_url, hash);
+        let encoded = encode_entity_id(entity_id);
+        let url = format!("{}/entities/{}", self.base_url, encoded);
 
         let response = self.http.get(&url).send().await?;
 
